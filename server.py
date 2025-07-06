@@ -1,6 +1,4 @@
 
-import os
-import httpx
 import mysql.connector
 from config import db_config
 from mcp.server.fastmcp import FastMCP
