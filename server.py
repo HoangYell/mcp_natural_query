@@ -20,11 +20,16 @@ if not test_db_connection():
     import sys
     sys.exit(1)
 
-mcp = FastMCP("naturalquery")
 
-@mcp.tool()
-def mysql_list_tables() -> list:
-    """Read all tables in the current MySQL schema to find the relevant table based on human input."""
+# Add title and description for better discoverability
+mcp = FastMCP(
+    "naturalquery",
+)
+
+
+# Use structured output and add tool metadata
+@mcp.tool(title="List MySQL Tables", description="Read all tables in the current MySQL schema to find the relevant table based on human input.")
+def mysql_list_tables() -> list[str]:
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
@@ -36,9 +41,9 @@ def mysql_list_tables() -> list:
     except Exception as e:
         return [f"Error: {e}"]
 
-@mcp.tool()
-def mysql_describe_table(table_name: str) -> list:
-    """Describe the structure of a given table in the current MySQL schema."""
+
+@mcp.tool(title="Describe Table", description="Describes the structure of a given table in the current MySQL schema.")
+def mysql_describe_table(table_name: str) -> list[tuple]:
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
@@ -50,9 +55,9 @@ def mysql_describe_table(table_name: str) -> list:
     except Exception as e:
         return [f"Error: {e}"]
 
-@mcp.tool()
+
+@mcp.tool(title="Execute MySQL Query", description="Executes a MySQL query and returns the result as a list of rows or affected row count.")
 def mysql_execute_query(query: str) -> list:
-    """Execute a MySQL query on the current schema. Returns result as list of rows."""
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
@@ -68,5 +73,7 @@ def mysql_execute_query(query: str) -> list:
     except Exception as e:
         return [f"Error: {e}"]
 
+
+# For production, use streamable-http transport for better scalability
 if __name__ == "__main__":
     mcp.run()
